@@ -42,3 +42,55 @@ def get_all_logs():
     rows = cursor.fetchall()
     conn.close()
     return [dict(row) for row in rows]
+
+def search_logs(query: str):
+    """Searches patient logs by raw input, translated text, or extracted meds."""
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    search_term = f"%{query}%"
+    cursor.execute('''
+        SELECT * FROM patient_logs 
+        WHERE raw_input LIKE ? 
+           OR translated_text LIKE ? 
+           OR extracted_meds LIKE ?
+        ORDER BY id DESC
+    ''', (search_term, search_term, search_term))
+    
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+def delete_log(log_id: int):
+    """Deletes a specific log record by ID."""
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM patient_logs WHERE id = ?', (log_id,))
+    conn.commit()
+    conn.close()
+
+def search_logs(query: str):
+    """Searches logs matching raw input, translated text, or meds."""
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    search_term = f"%{query}%"
+    cursor.execute('''
+        SELECT * FROM patient_logs 
+        WHERE raw_input LIKE ? 
+           OR translated_text LIKE ? 
+           OR extracted_meds LIKE ?
+        ORDER BY id DESC
+    ''', (search_term, search_term, search_term))
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+def delete_log(log_id: int):
+    """Deletes a specific patient log entry."""
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM patient_logs WHERE id = ?', (log_id,))
+    conn.commit()
+    conn.close()
